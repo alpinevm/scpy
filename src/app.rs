@@ -144,12 +144,6 @@ fn LandingPage() -> impl IntoView {
                         <h2 class="brand-name">"scpy.app"</h2>
                     </div>
                 </div>
-
-                <div class="topbar-meta">
-                    <span class="meta-chip">"Short links"</span>
-                    <span class="meta-chip">"Password protected"</span>
-                    <span class="meta-chip">"Live updates"</span>
-                </div>
             </header>
 
             <section class="create-panel card">
@@ -227,81 +221,13 @@ fn LandingPage() -> impl IntoView {
                 }}
             </section>
 
-            <section class="hero-grid">
-                <div class="hero-copy card">
-                    <p class="eyebrow">"Fast and simple"</p>
-                    <h1>"Short links. Private text. Live sync."</h1>
-                    <p class="lead">
-                        "Set a password, share a short link, and keep typing. Anyone with both can unlock"
-                        " the clipboard and see the latest text."
-                    </p>
-                </div>
-
-                <div class="hero-preview card">
-                    <div class="preview-window">
-                        <div class="preview-header">
-                            <span class="preview-dot dot-copper"></span>
-                            <span class="preview-dot dot-gold"></span>
-                            <span class="preview-dot dot-teal"></span>
-                            <span class="preview-title">"clip / 8F3kPq2WZa"</span>
-                        </div>
-
-                        <div class="preview-stack">
-                            <div class="preview-badge">"Shared text"</div>
-                            <p class="preview-copy">
-                                "Launch notes updated. Final copy is live for everyone already unlocked."
-                            </p>
-                            <div class="preview-divider"></div>
-                            <div class="preview-row">
-                                <span>"short link"</span>
-                                <span>"separate password"</span>
-                            </div>
-                            <div class="preview-row">
-                                <span>"encrypted before upload"</span>
-                                <span>"updates appear live"</span>
-                            </div>
-                            <div class="preview-note">
-                                {format!("scpy.app runs {} in the browser so the server only handles encrypted data.", cipher_suite_label())}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="feature-grid">
-                <article class="feature-card card">
-                    <p class="feature-index">"01"</p>
-                    <h3>"Compact links"</h3>
-                    <p>
-                        "Short random IDs keep sharing quick without forcing anyone to invent names."
-                    </p>
-                </article>
-
-                <article class="feature-card card">
-                    <p class="feature-index">"02"</p>
-                    <h3>"Password-protected"</h3>
-                    <p>
-                        "The password stays with the people using the clipboard, not the server."
-                    </p>
-                </article>
-
-                <article class="feature-card card">
-                    <p class="feature-index">"03"</p>
-                    <h3>"Live text updates"</h3>
-                    <p>
-                        "Unlocked browsers stay in sync as new text is saved."
-                    </p>
-                </article>
-            </section>
-
             <section class="security-band card">
                 <div>
-                    <p class="eyebrow">"Privacy"</p>
-                    <h2>"Your text is encrypted before it leaves the page."</h2>
+                    <p class="eyebrow">"How it works"</p>
+                    <h2>"Share the link. Share the password separately."</h2>
                 </div>
                 <p class="security-copy">
-                    "scpy.app stores and relays encrypted data only. Public pages stay simple, and private"
-                    " clipboard links are treated as private surfaces rather than content pages."
+                    {format!("scpy.app runs {} in the browser so the server only handles encrypted data.", cipher_suite_label())}
                 </p>
             </section>
         </div>
