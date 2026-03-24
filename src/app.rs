@@ -151,6 +151,10 @@ fn LandingPage() -> impl IntoView {
                     <div>
                         <p class="eyebrow">"Create"</p>
                         <h2 class="brand-name create-title">"Spin up an encrypted clipboard now."</h2>
+                        <p class="room-copy">
+                            "Set a password, share a short link, and keep typing. Anyone with both can unlock"
+                            " the clipboard and see the latest text."
+                        </p>
                     </div>
                     <div
                         class=("status-pill", true)
