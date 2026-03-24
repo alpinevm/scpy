@@ -64,7 +64,7 @@ pub fn App() -> impl IntoView {
         <Title text="scpy.app"/>
         <Meta
             name="description"
-            content="scpy.app is an end-to-end encrypted live clipboard with tiny room URLs, a Rust backend, and a crawlable SSR shell."
+            content="scpy.app is an end-to-end encrypted live clipboard with short links and live updates."
         />
 
         <Router>
@@ -80,14 +80,13 @@ pub fn App() -> impl IntoView {
 
 #[component]
 fn LandingPage() -> impl IntoView {
-    let kdf_profile = KdfParams::interactive();
     let create_password = RwSignal::new(String::new());
     let create_clipboard = RwSignal::new(String::from(
-        "Paste or type a clipboard payload here.\n\nCreate a room, share the short URL, and unlock it from a second tab to verify live encrypted updates.",
+        "Paste or type text here.\n\nCreate an encrypted clipboard, share the short link, and unlock it from another tab to see live updates.",
     ));
     let create_pending = RwSignal::new(false);
     let create_status = RwSignal::new(String::from(
-        "Create a room in the browser. Only encrypted metadata and ciphertext are sent to the backend.",
+        "Create an encrypted clipboard in the browser. Only encrypted metadata and ciphertext are sent to the backend.",
     ));
     let created_room_id = RwSignal::new(None::<String>);
 
@@ -96,13 +95,12 @@ fn LandingPage() -> impl IntoView {
         let clipboard = create_clipboard.get();
 
         if password.trim().is_empty() {
-            create_status.set("Enter a room password before creating a room.".to_string());
+            create_status.set("Enter a password before creating a clipboard.".to_string());
             return;
         }
 
         create_pending.set(true);
-        create_status
-            .set("Deriving the room key in the browser and uploading ciphertext…".to_string());
+        create_status.set("Encrypting locally and uploading ciphertext…".to_string());
         created_room_id.set(None);
 
         spawn_local(async move {
@@ -121,12 +119,13 @@ fn LandingPage() -> impl IntoView {
             match result {
                 Ok(CreateRoomResponse { room_id }) => {
                     create_status.set(
-                        "Room created. Share the link separately from the password.".to_string(),
+                        "Clipboard created. Share the link separately from the password."
+                            .to_string(),
                     );
                     created_room_id.set(Some(room_id));
                 }
                 Err(error) => {
-                    create_status.set(format!("Room creation failed: {error}"));
+                    create_status.set(format!("Clipboard creation failed: {error}"));
                 }
             }
 
@@ -147,81 +146,16 @@ fn LandingPage() -> impl IntoView {
                 </div>
 
                 <div class="topbar-meta">
-                    <span class="meta-chip">"Leptos SSR shell"</span>
-                    <span class="meta-chip">"Short URLs"</span>
-                    <span class="meta-chip">"E2EE by default"</span>
+                    <span class="meta-chip">"Short links"</span>
+                    <span class="meta-chip">"Password protected"</span>
+                    <span class="meta-chip">"Live updates"</span>
                 </div>
             </header>
-
-            <section class="hero-grid">
-                <div class="hero-copy card">
-                    <p class="eyebrow">"Zero-knowledge direction locked"</p>
-                    <h1>"Tiny URLs. Zero-knowledge rooms. Live clipboard."</h1>
-                    <p class="lead">
-                        "scpy.app keeps the server blind to your clipboard contents. The browser derives"
-                        " keys locally, encrypts locally, and syncs ciphertext over a single Rust backend."
-                    </p>
-
-                    <div class="button-row">
-                        <a class="button button-primary" href="/r/demo-alpha">
-                            "Open a room shell"
-                        </a>
-                        <a class="button button-secondary" href="/api/architecture">
-                            "Inspect architecture"
-                        </a>
-                    </div>
-
-                    <div class="hero-stats">
-                        <div class="stat-card">
-                            <span class="stat-label">"v1 crypto stance"</span>
-                            <strong>"End-to-end encrypted"</strong>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-label">"URL target"</span>
-                            <strong>"10 chars"</strong>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-label">"SEO posture"</span>
-                            <strong>"SSR public, noindex private"</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="hero-preview card">
-                    <div class="preview-window">
-                        <div class="preview-header">
-                            <span class="preview-dot dot-copper"></span>
-                            <span class="preview-dot dot-gold"></span>
-                            <span class="preview-dot dot-teal"></span>
-                            <span class="preview-title">"room / 8F3kPq2WZa"</span>
-                        </div>
-
-                        <div class="preview-stack">
-                            <div class="preview-badge">"Clipboard payload"</div>
-                            <p class="preview-copy">
-                                "encrypted clipboard payload…"
-                            </p>
-                            <div class="preview-divider"></div>
-                            <div class="preview-row">
-                                <span>"wrapped room key"</span>
-                                <span>"argon2id in browser"</span>
-                            </div>
-                            <div class="preview-row">
-                                <span>{format!("argon2id {} MiB", kdf_profile.memory_cost_kib / 1024)}</span>
-                                <span>"ciphertext in redis"</span>
-                            </div>
-                            <div class="preview-note">
-                                {format!("The browser runs {}. The backend only stores ciphertext and streams SSE updates.", cipher_suite_label())}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <section class="create-panel card">
                 <div class="panel-head">
                     <div>
-                        <p class="eyebrow">"Create a real room"</p>
+                        <p class="eyebrow">"Create"</p>
                         <h2 class="brand-name create-title">"Spin up an encrypted clipboard now."</h2>
                     </div>
                     <div
@@ -242,7 +176,7 @@ fn LandingPage() -> impl IntoView {
 
                 <div class="create-grid">
                     <label class="field">
-                        <span class="field-label">"Room password"</span>
+                        <span class="field-label">"Password"</span>
                         <input
                             class="text-input"
                             type="password"
@@ -253,7 +187,7 @@ fn LandingPage() -> impl IntoView {
                     </label>
 
                     <label class="field field-area">
-                        <span class="field-label">"Initial clipboard payload"</span>
+                        <span class="field-label">"Starting text"</span>
                         <textarea
                             class="text-area text-area-compact"
                             rows="8"
@@ -269,7 +203,7 @@ fn LandingPage() -> impl IntoView {
                         disabled=move || create_pending.get()
                         on:click=create_room
                     >
-                        {move || if create_pending.get() { "Creating room…" } else { "Create encrypted room" }}
+                        {move || if create_pending.get() { "Creating clipboard…" } else { "Create encrypted clipboard" }}
                     </button>
                 </div>
 
@@ -280,11 +214,11 @@ fn LandingPage() -> impl IntoView {
                         let href = room_href(&room_id);
                         view! {
                             <div class="share-card">
-                                <p class="field-label">"Shareable room URL"</p>
+                                <p class="field-label">"Shareable link"</p>
                                 <div class="share-row">
                                     <input class="text-input" readonly=true prop:value=href.clone()/>
                                     <a class="button button-secondary" href=href.clone()>
-                                        "Open room"
+                                        "Open clipboard"
                                     </a>
                                 </div>
                             </div>
@@ -293,41 +227,81 @@ fn LandingPage() -> impl IntoView {
                 }}
             </section>
 
+            <section class="hero-grid">
+                <div class="hero-copy card">
+                    <p class="eyebrow">"Fast and simple"</p>
+                    <h1>"Short links. Private text. Live sync."</h1>
+                    <p class="lead">
+                        "Set a password, share a short link, and keep typing. Anyone with both can unlock"
+                        " the clipboard and see the latest text."
+                    </p>
+                </div>
+
+                <div class="hero-preview card">
+                    <div class="preview-window">
+                        <div class="preview-header">
+                            <span class="preview-dot dot-copper"></span>
+                            <span class="preview-dot dot-gold"></span>
+                            <span class="preview-dot dot-teal"></span>
+                            <span class="preview-title">"clip / 8F3kPq2WZa"</span>
+                        </div>
+
+                        <div class="preview-stack">
+                            <div class="preview-badge">"Shared text"</div>
+                            <p class="preview-copy">
+                                "Launch notes updated. Final copy is live for everyone already unlocked."
+                            </p>
+                            <div class="preview-divider"></div>
+                            <div class="preview-row">
+                                <span>"short link"</span>
+                                <span>"separate password"</span>
+                            </div>
+                            <div class="preview-row">
+                                <span>"encrypted before upload"</span>
+                                <span>"updates appear live"</span>
+                            </div>
+                            <div class="preview-note">
+                                {format!("scpy.app runs {} in the browser so the server only handles encrypted data.", cipher_suite_label())}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="feature-grid">
                 <article class="feature-card card">
                     <p class="feature-index">"01"</p>
-                    <h3>"Compact room addresses"</h3>
+                    <h3>"Compact links"</h3>
                     <p>
-                        "Short random IDs keep navigation fast without letting users hand-roll poor slugs."
+                        "Short random IDs keep sharing quick without forcing anyone to invent names."
                     </p>
                 </article>
 
                 <article class="feature-card card">
                     <p class="feature-index">"02"</p>
-                    <h3>"Client-side key derivation"</h3>
+                    <h3>"Password-protected"</h3>
                     <p>
-                        "The browser derives keys and performs wrapping locally, so the service stays zero-knowledge."
+                        "The password stays with the people using the clipboard, not the server."
                     </p>
                 </article>
 
                 <article class="feature-card card">
                     <p class="feature-index">"03"</p>
-                    <h3>"SSR where it helps"</h3>
+                    <h3>"Live text updates"</h3>
                     <p>
-                        "Leptos SSR keeps the landing surface crawlable while private room shells stay noindex and content-blind."
+                        "Unlocked browsers stay in sync as new text is saved."
                     </p>
                 </article>
             </section>
 
             <section class="security-band card">
                 <div>
-                    <p class="eyebrow">"Security call"</p>
-                    <h2>"End-to-end encryption is now the default v1 plan."</h2>
+                    <p class="eyebrow">"Privacy"</p>
+                    <h2>"Your text is encrypted before it leaves the page."</h2>
                 </div>
                 <p class="security-copy">
-                    "Leptos stays, SSR stays, and the trust boundary moves fully into the browser."
-                    " Public pages stay crawlable for SEO. Private room pages render only a shell and should"
-                    " be marked noindex so search engines never treat them as content pages."
+                    "scpy.app stores and relays encrypted data only. Public pages stay simple, and private"
+                    " clipboard links are treated as private surfaces rather than content pages."
                 </p>
             </section>
         </div>
@@ -341,7 +315,7 @@ fn RoomPage() -> impl IntoView {
         params.with(|params| {
             params
                 .get("room_id")
-                .unwrap_or_else(|| "unknown-room".to_string())
+                .unwrap_or_else(|| "unknown-clipboard".to_string())
         })
     };
 
@@ -353,7 +327,7 @@ fn RoomPage() -> impl IntoView {
     let saving = RwSignal::new(false);
     let version = RwSignal::new(0_u64);
     let status = RwSignal::new(String::from(
-        "Unlock the room to fetch the encrypted clipboard snapshot and begin live updates.",
+        "Unlock the clipboard to fetch the encrypted snapshot and begin live updates.",
     ));
     let stream_slot: Rc<RefCell<Option<RoomEventStream>>> = Rc::new(RefCell::new(None));
 
@@ -366,13 +340,12 @@ fn RoomPage() -> impl IntoView {
             unlocked.set(false);
             room_key.set(None);
             close_room_stream(&stream_slot);
-            status.set("Enter the room password to unlock the clipboard.".to_string());
+            status.set("Enter the password to unlock the clipboard.".to_string());
             return;
         }
 
         loading.set(true);
-        status
-            .set("Fetching ciphertext, deriving the room key, and decrypting locally…".to_string());
+        status.set("Fetching ciphertext and decrypting locally…".to_string());
 
         spawn_local(async move {
             let result = fetch_room_snapshot(&room_id_value)
@@ -393,7 +366,7 @@ fn RoomPage() -> impl IntoView {
                     room_key.set(Some(key.clone()));
                     unlocked.set(true);
                     status.set(format!(
-                        "Room unlocked with {}. Listening for live encrypted updates.",
+                        "Clipboard unlocked with {}. Listening for live encrypted updates.",
                         cipher_suite_label()
                     ));
                     attach_room_stream(
@@ -423,7 +396,7 @@ fn RoomPage() -> impl IntoView {
         let plaintext = clipboard.get();
 
         let Some(key) = maybe_key else {
-            status.set("Unlock the room before sending an encrypted update.".to_string());
+            status.set("Unlock the clipboard before sending an encrypted update.".to_string());
             return;
         };
 
@@ -463,19 +436,19 @@ fn RoomPage() -> impl IntoView {
 
     view! {
         <div class="room-shell">
-            <Title text="Private room | scpy.app"/>
+            <Title text="Private clipboard | scpy.app"/>
             <Meta name="robots" content="noindex, nofollow"/>
             <header class="topbar room-topbar">
                 <div class="brand-lockup">
                     <div class="brand-mark">"S"</div>
                     <div>
-                        <p class="brand-kicker">"Encrypted room"</p>
-                        <h2 class="brand-name">{move || format!("Room {}", room_id())}</h2>
+                        <p class="brand-kicker">"Encrypted clipboard"</p>
+                        <h2 class="brand-name">{move || format!("Clipboard {}", room_id())}</h2>
                     </div>
                 </div>
 
                 <a class="button button-secondary" href="/">
-                    "Back to overview"
+                    "Back home"
                 </a>
             </header>
 
@@ -506,7 +479,7 @@ fn RoomPage() -> impl IntoView {
                     </p>
 
                     <div class="share-card room-share-card">
-                        <p class="field-label">"Room link"</p>
+                        <p class="field-label">"Share link"</p>
                         <div class="share-row">
                             <input class="text-input" readonly=true prop:value=room_link/>
                             <div class="status-pill">{move || format!("version {}", version.get())}</div>
@@ -515,7 +488,7 @@ fn RoomPage() -> impl IntoView {
 
                     <div class="field-grid">
                         <label class="field">
-                            <span class="field-label">"Room password"</span>
+                            <span class="field-label">"Password"</span>
                             <input
                                 class="text-input"
                                 type="password"
@@ -536,7 +509,7 @@ fn RoomPage() -> impl IntoView {
                                 } else if unlocked.get() {
                                     "Reload snapshot"
                                 } else {
-                                    "Unlock room"
+                                    "Unlock clipboard"
                                 }
                             }}
                         </button>
@@ -576,11 +549,11 @@ fn RoomPage() -> impl IntoView {
                     <section class="side-card card">
                         <p class="eyebrow">"Current flow"</p>
                         <ul class="side-list">
-                            <li>"Unlock from GET /api/rooms/:id"</li>
-                            <li>"Save to POST /api/rooms/:id/clipboard"</li>
-                            <li>"Live fanout from SSE /events"</li>
-                            <li>"Client keeps the room key in memory"</li>
-                            <li>"Room TTL refreshes on update"</li>
+                            <li>"Unlock from the saved encrypted snapshot"</li>
+                            <li>"Save encrypted updates"</li>
+                            <li>"Live changes stream over SSE"</li>
+                            <li>"The secret key stays in memory"</li>
+                            <li>"Clipboard TTL refreshes on update"</li>
                         </ul>
                     </section>
 
@@ -605,9 +578,9 @@ fn NotFoundPage() -> impl IntoView {
     view! {
         <section class="not-found card">
             <p class="eyebrow">"404"</p>
-            <h1>"This room does not exist."</h1>
+            <h1>"This clipboard does not exist."</h1>
             <p class="lead">
-                "The room ID may be wrong, or the room may have expired."
+                "The link may be wrong, or the clipboard may have expired."
             </p>
             <a class="button button-primary" href="/">
                 "Return home"
@@ -646,7 +619,7 @@ fn attach_room_stream(
             Ok(event_source) => event_source,
             Err(error) => {
                 status.set(format!(
-                    "Room unlocked, but the live SSE connection failed: {}",
+                    "Clipboard unlocked, but the live SSE connection failed: {}",
                     js_error(&error)
                 ));
                 return;
@@ -684,7 +657,7 @@ fn attach_room_stream(
             .add_event_listener_with_callback("clipboard", on_clipboard.as_ref().unchecked_ref())
         {
             status.set(format!(
-                "Room unlocked, but the SSE listener setup failed: {}",
+                "Clipboard unlocked, but the SSE listener setup failed: {}",
                 js_error(&error)
             ));
             event_source.close();
@@ -692,7 +665,8 @@ fn attach_room_stream(
         }
 
         let on_error = Closure::<dyn FnMut(Event)>::wrap(Box::new(move |_| {
-            status.set("Live connection dropped. Unlock the room again to resync.".to_string());
+            status
+                .set("Live connection dropped. Unlock the clipboard again to resync.".to_string());
         }));
         let _ = event_source
             .add_event_listener_with_callback("error", on_error.as_ref().unchecked_ref());
@@ -725,7 +699,7 @@ async fn create_remote_room(request: &CreateRoomRequest) -> Result<CreateRoomRes
         let status = response.status();
         let body = response.text().await.unwrap_or_default();
         return Err(format!(
-            "server returned {status} while creating the room: {body}"
+            "server returned {status} while creating the clipboard: {body}"
         ));
     }
 
@@ -737,7 +711,7 @@ async fn create_remote_room(request: &CreateRoomRequest) -> Result<CreateRoomRes
 
 #[cfg(not(target_arch = "wasm32"))]
 async fn create_remote_room(_request: &CreateRoomRequest) -> Result<CreateRoomResponse, String> {
-    Err("Room creation requires browser hydration.".to_string())
+    Err("Clipboard creation requires browser hydration.".to_string())
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -751,7 +725,7 @@ async fn fetch_room_snapshot(room_id: &str) -> Result<GetRoomResponse, String> {
         let status = response.status();
         let body = response.text().await.unwrap_or_default();
         return Err(format!(
-            "server returned {status} while loading the room: {body}"
+            "server returned {status} while loading the clipboard: {body}"
         ));
     }
 
@@ -763,7 +737,7 @@ async fn fetch_room_snapshot(room_id: &str) -> Result<GetRoomResponse, String> {
 
 #[cfg(not(target_arch = "wasm32"))]
 async fn fetch_room_snapshot(_room_id: &str) -> Result<GetRoomResponse, String> {
-    Err("Room loading requires browser hydration.".to_string())
+    Err("Clipboard loading requires browser hydration.".to_string())
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -797,7 +771,7 @@ async fn post_clipboard_update(
     _room_id: &str,
     _request: &UpdateClipboardRequest,
 ) -> Result<UpdateClipboardResponse, String> {
-    Err("Room updates require browser hydration.".to_string())
+    Err("Clipboard updates require browser hydration.".to_string())
 }
 
 #[cfg(target_arch = "wasm32")]
