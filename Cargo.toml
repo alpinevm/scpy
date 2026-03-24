@@ -1,0 +1,93 @@
+[workspace]
+members = ["crates/scpy-crypto"]
+
+[package]
+name = "secopy"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+scpy-crypto = { path = "crates/scpy-crypto" }
+leptos = { version = "0.8" }
+leptos_meta = { version = "0.8" }
+leptos_router = { version = "0.8" }
+axum = { version = "0.8", features = ["json"], optional = true }
+async-stream = { version = "0.3", optional = true }
+async-trait = { version = "0.1", optional = true }
+console_error_panic_hook = { version = "0.1", optional = true }
+futures-core = { version = "0.3", optional = true }
+getrandom = { version = "0.3", optional = true }
+gloo-net = { version = "0.6", optional = true }
+leptos_axum = { version = "0.8", optional = true }
+redis = { version = "1", features = ["tokio-comp"], optional = true }
+serde = { version = "1", features = ["derive"], optional = true }
+serde_json = { version = "1", optional = true }
+thiserror = { version = "1", optional = true }
+tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "sync", "time"], optional = true }
+tower-http = { version = "0.6", features = ["compression-full", "trace"], optional = true }
+tracing = { version = "0.1", optional = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"], optional = true }
+wasm-bindgen = { version = "0.2.106", optional = true }
+web-sys = { version = "0.3", features = ["Event", "EventSource", "MessageEvent"], optional = true }
+
+[features]
+hydrate = [
+    "leptos/hydrate",
+    "dep:console_error_panic_hook",
+    "dep:gloo-net",
+    "dep:serde",
+    "dep:serde_json",
+    "dep:wasm-bindgen",
+    "dep:web-sys",
+]
+ssr = [
+    "dep:axum",
+    "dep:async-stream",
+    "dep:async-trait",
+    "dep:futures-core",
+    "dep:getrandom",
+    "dep:leptos_axum",
+    "dep:redis",
+    "dep:serde",
+    "dep:serde_json",
+    "dep:thiserror",
+    "dep:tokio",
+    "dep:tower-http",
+    "dep:tracing",
+    "dep:tracing-subscriber",
+    "leptos/ssr",
+    "leptos_meta/ssr",
+    "leptos_router/ssr",
+]
+
+[profile.wasm-release]
+inherits = "release"
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[package.metadata.leptos]
+output-name = "scpy-app"
+site-root = "target/site"
+site-pkg-dir = "pkg"
+style-file = "style/main.scss"
+assets-dir = "public"
+site-addr = "127.0.0.1:3000"
+reload-port = 3001
+browserquery = "defaults"
+bin-features = ["ssr"]
+bin-default-features = false
+lib-features = ["hydrate"]
+lib-default-features = false
+lib-profile-release = "wasm-release"
+
+[dev-dependencies]
+bytes = "1"
+futures-core = "0.3"
+futures-util = "0.3"
+reqwest = { version = "0.12", features = ["json", "stream"] }
+tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "time"] }

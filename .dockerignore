@@ -1,0 +1,5 @@
+/target
+/.git
+/node_modules
+/playwright-report
+/end2end/test-results
