@@ -501,8 +501,8 @@ fn absolute_room_href(room_id: &str) -> String {
 
     #[cfg(target_arch = "wasm32")]
     if let Some(window) = web_sys::window() {
-        if let Ok(origin) = window.location().origin() {
-            return format!("{origin}{room_path}");
+        if let Ok(host) = window.location().host() {
+            return format!("{host}{room_path}");
         }
     }
 
